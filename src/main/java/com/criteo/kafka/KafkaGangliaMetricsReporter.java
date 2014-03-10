@@ -1,20 +1,15 @@
 package com.criteo.kafka;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.log4j.Logger;
-
 import com.yammer.metrics.Metrics;
-import com.yammer.metrics.core.Metric;
-import com.yammer.metrics.core.MetricName;
 import com.yammer.metrics.core.MetricPredicate;
 import com.yammer.metrics.reporting.GangliaReporter;
-
 import kafka.metrics.KafkaMetricsConfig;
 import kafka.metrics.KafkaMetricsReporter;
-import kafka.metrics.KafkaMetricsReporterMBean;
 import kafka.utils.VerifiableProperties;
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class KafkaGangliaMetricsReporter implements KafkaMetricsReporter,
 	KafkaGangliaMetricsReporterMBean {
@@ -23,7 +18,8 @@ public class KafkaGangliaMetricsReporter implements KafkaMetricsReporter,
 	static String GANGLIA_DEFAULT_HOST = "localhost";
 	static int GANGLIA_DEFAULT_PORT = 8649;
 	static String GANGLIA_DEFAULT_PREFIX = "kafka";
-	
+    static String FILTER_DEFAULT_SEPARATOR = ";";
+
 	boolean initialized = false;
 	boolean running = false;
 	GangliaReporter reporter = null;
@@ -74,8 +70,9 @@ public class KafkaGangliaMetricsReporter implements KafkaMetricsReporter,
             gangliaPort = props.getInt("kafka.ganglia.metrics.port", GANGLIA_DEFAULT_PORT);
             gangliaGroupPrefix = props.getString("kafka.ganglia.metrics.group", GANGLIA_DEFAULT_PREFIX);
             String regex = props.getString("kafka.ganglia.metrics.exclude.regex", null);
+            String separator = props.getString("kafka.ganglia.metrics.filter.separator",FILTER_DEFAULT_SEPARATOR);
             if (regex != null) {
-            	predicate = new RegexMetricPredicate(regex);
+            	predicate = new RegexMetricPredicate(regex.split(separator));
             }
             try {
             	reporter = new GangliaReporter(
