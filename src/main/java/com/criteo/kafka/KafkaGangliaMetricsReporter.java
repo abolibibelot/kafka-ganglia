@@ -9,6 +9,10 @@ import kafka.utils.VerifiableProperties;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class KafkaGangliaMetricsReporter implements KafkaMetricsReporter,
@@ -70,9 +74,18 @@ public class KafkaGangliaMetricsReporter implements KafkaMetricsReporter,
             gangliaPort = props.getInt("kafka.ganglia.metrics.port", GANGLIA_DEFAULT_PORT);
             gangliaGroupPrefix = props.getString("kafka.ganglia.metrics.group", GANGLIA_DEFAULT_PREFIX);
             String regex = props.getString("kafka.ganglia.metrics.exclude.regex", null);
+            String whitelistFile = props.getString("kafka.ganglia.metrics.whitelist",null);
             String separator = props.getString("kafka.ganglia.metrics.filter.separator",FILTER_DEFAULT_SEPARATOR);
             if (regex != null) {
             	predicate = new RegexMetricPredicate(regex.split(separator));
+            }
+            if (whitelistFile != null){
+                try {
+                    List<String> whitelisted = Files.readAllLines(Paths.get(whitelistFile), Charset.defaultCharset());
+                    predicate = new StaticWhitelistPredicate(whitelisted);
+                } catch (IOException e) {
+                    LOG.error("Unable to read whitelist from " + whitelistFile, e);
+                }
             }
             try {
             	reporter = new GangliaReporter(
