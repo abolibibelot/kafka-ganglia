@@ -1,15 +1,15 @@
 Kafka Ganglia Metrics Reporter
 ==============================
 
-This is a simple reporter for kafka using the 
-[GangliaReporter](http://metrics.codahale.com/manual/ganglia/). It works with 
+This is a simple reporter for kafka using the
+[GangliaReporter](http://metrics.codahale.com/manual/ganglia/). It works with
 kafka 0.8 beta version.
 
 Install On Broker
 ------------
 
 1. Build the `kafka-ganglia-1.0.0.jar` jar using `mvn package`.
-2. Add `kafka-ganglia-1.0.0.jar` and `metrics-ganglia-2.2.0.jar` to the `libs/` 
+2. Add `kafka-ganglia-1.0.0.jar` and `metrics-ganglia-2.2.0.jar` to the `libs/`
    directory of your kafka broker installation
 3. Configure the broker (see the configuration section below)
 4. Restart the broker
@@ -27,10 +27,13 @@ Here is a list of default properties used:
     kafka.ganglia.metrics.host=localhost
     kafka.ganglia.metrics.port=8649
     kafka.ganglia.metrics.group=kafka
-    # This can be use to exclude some metrics from ganglia 
+    # The following can be used to exclude metrics from ganglia
     # since kafka has quite a lot of metrics, it is useful
     # if you have many topics/partitions.
+    # You can specify multiple patterns, with a semicolon (;)
+    # as a separator. You can optionally specify a different separator
     kafka.ganglia.metrics.exclude.regex=<not set>
+    kafka.ganglia.metrics.filter.separator=<not set>
 
 Usage As Lib
 -----------
