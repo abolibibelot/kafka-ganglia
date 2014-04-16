@@ -83,7 +83,7 @@ public class KafkaGangliaMetricsReporter implements KafkaMetricsReporter,
                 try {
                     List<String> whitelisted = Files.readAllLines(Paths.get(whitelistFile), Charset.defaultCharset());
                     predicate = new StaticWhitelistPredicate(whitelisted);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     LOG.error("Unable to read whitelist from " + whitelistFile, e);
                 }
             }
